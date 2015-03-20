@@ -87,34 +87,9 @@ function init() {
  //   scene.add(gridXZ);
 
     var light = new THREE.PointLight(0xffffff);
-    light.position.set(150, 150, 0);
+    light.position.set(0, 0, 0);
 	light.castShadow = true;
     scene.add(light);
-	
-	var light2 = new THREE.PointLight(0xffffff);
-    light2.position.set(-150, -150, 0);
-	light.castShadow = true;
-    scene.add(light2);
-	
-	var light3 = new THREE.PointLight(0xffffff);
-    light3.position.set(150, -150, 0);
-	light.castShadow = true;
-    scene.add(light3);
-	
-	var light4 = new THREE.PointLight(0xffffff);
-    light4.position.set(-150, 150, 0);
-	light.castShadow = true;
-    scene.add(light4);
-	
-	var light5 = new THREE.PointLight(0xffffff);
-    light5.position.set(0, 0, 150);
-	light.castShadow = true;
-    scene.add(light5);
-	
-	var light6 = new THREE.PointLight(0xffffff);
-    light6.position.set(0, 0, -150);
-	light.castShadow = true;
-    scene.add(light6);
 	
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
