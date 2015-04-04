@@ -21,131 +21,238 @@
 </style>
 </head>
 <body>
-<div id="info">Homework 1: Earth-Sun-Moon </div>
-<div id="info2">type 'S' to toggle spin<br/>
-type 'M' to Start or stop music</div>
+<div id="info">Homework 2: Door frame </div>
+<div id="info2"><a href="javascript:open();">open </a></br><a href="javascript:close();">close </a></div>
 <script src="js/three.min.js"></script>
 <script src="js/OrbitControls.js"></script>
 <script src="js/KeyboardState.js"></script>
-<audio id="sound" autoplay loop style="display:none">
-<source src="music/paino.mp3" type='audio/mp3'>
+<audio id="sound" style="display:none">
+<source src="music/open.wav" type='audio/wav'>
 
 <script>
-var camera, scene, renderer, sun, earth, moon, background, angle = 0, angle2 = 0,
-    clock, control,keyboard = new KeyboardState();
-var turn = true, audio=true;
+var camera, scene, renderer, geometry, material, mesh, light1, light2, controls, 
+			doorframeh1, doorframeh2, doorframer1, doorframer2, doorframel1, doorframel2, doorframee1, doorframee2, door,
+			doorshaft1, doorshaft2;
+var angle = 0;
+var turn = false;
+var turn2 = false;
 
 init();
 animate();
 
+function open() {
+    turn = !turn;
+}
+function close() {
+    turn2 = !turn2;
+}
+
 function init() {
-    clock = new THREE.Clock();
+
     scene = new THREE.Scene();
 	
-	sceneBack = new THREE.Scene();
-    cameraBack = new THREE.OrthographicCamera(-10, 10, 10, -10, 1, 1000);
-	cameraBack.position.z = 5;
-    cameraBack.lookAt(new THREE.Vector3(0, 0, 0));
-
-    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
     camera.position.z = 500;
     scene.add(camera);
 	
-	THREE.ImageUtils.crossOrigin = '';
-	var backgroundTexture = new THREE.ImageUtils.loadTexture( 'images/stars.jpg' );
-	var back = new THREE.Mesh(new THREE.PlaneGeometry(30, 30),
-    new THREE.MeshBasicMaterial({
-		map: backgroundTexture,
-    }));
-    back.material.depthTest = false;
-    back.material.depthWrite = false;
-    sceneBack.add(back);
-
-	var sunTexture = new THREE.ImageUtils.loadTexture( 'images/sun.jpg' );
-    sun = new THREE.Mesh(new THREE.SphereGeometry(40,40,40),
-    new THREE.MeshBasicMaterial({
-         map: sunTexture, side: THREE.DoubleSide
-    }));
+	var woodTexture = THREE.ImageUtils.loadTexture("images/wood1.jpg");
+    var wood2Texture = THREE.ImageUtils.loadTexture("images/wood2.jpg");
+	var wood3Texture = THREE.ImageUtils.loadTexture("images/wood_1.jpg");
+	var wood4Texture = THREE.ImageUtils.loadTexture("images/wood_2.jpg");
+	var woodbumptex = THREE.ImageUtils.loadTexture("images/wood11.jpg");
+	var woodbumptex2 = THREE.ImageUtils.loadTexture("images/wood22.jpg");
+	var woodbumptex3 = THREE.ImageUtils.loadTexture("images/wood33.jpg");
+	var woodbumptex4 = THREE.ImageUtils.loadTexture("images/wood44.jpg");
+	var MetalTexture = THREE.ImageUtils.loadTexture("images/Metal.jpg");
+	var MetalTexture2 = THREE.ImageUtils.loadTexture("images/Metal2.jpg");	
+	//doorframe
+	//h
+	doorframeh1 = new THREE.BoxGeometry(90, 3, 2);
+    material1 = new THREE.MeshPhongMaterial({map:woodTexture,bumpMap:woodbumptex});
+    mesh1 = new THREE.Mesh(doorframeh1, material1);
+	mesh1.position.set(48, 214.5, -1);
+    scene.add(mesh1);
 	
-	var earthTexture = new THREE.ImageUtils.loadTexture( 'images/earth.jpg' );
-    earth = new THREE.Mesh(new THREE.SphereGeometry(20,20,20),
-    new THREE.MeshBasicMaterial({
-         map: earthTexture, side: THREE.DoubleSide
-    }));
+	doorframeh2 = new THREE.BoxGeometry(88, 4, 2);
+    material2 = new THREE.MeshPhongMaterial({map:wood3Texture,bumpMap:woodbumptex3});
+    mesh2 = new THREE.Mesh(doorframeh2, material2);
+	mesh2.position.set(48, 214, -3);
+    scene.add(mesh2);
 	
-	var moonTexture = new THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
-    moon = new THREE.Mesh(new THREE.SphereGeometry(9,9,9),
-    new THREE.MeshBasicMaterial({
-         map: moonTexture, side: THREE.DoubleSide
-    }));
-    earth.add(moon);
-    sun.add(earth);
-    scene.add(sun);
+	//l	
+	doorframel1 = new THREE.BoxGeometry(3, 216, 2);
+    material3 = new THREE.MeshPhongMaterial({map:wood2Texture,bumpMap:woodbumptex2});
+    mesh3 = new THREE.Mesh(doorframel1, material3);
+	mesh3.position.set(94.5, 108, -1);
+    scene.add(mesh3);
+	
+	doorframel2 = new THREE.BoxGeometry(4, 216, 2);
+    material4 = new THREE.MeshPhongMaterial({map:wood4Texture,bumpMap:woodbumptex4});
+    mesh4 = new THREE.Mesh(doorframel2, material4);
+	mesh4.position.set(94, 108, -3);
+    scene.add(mesh4);
+	
+	//r	
+	doorframer1 = new THREE.BoxGeometry(3, 216, 2);
+    material5 = new THREE.MeshPhongMaterial({map:wood2Texture,bumpMap:woodbumptex2});
+    mesh5 = new THREE.Mesh(doorframer1, material5);
+	mesh5.position.set(1.5, 108, -1);
+    scene.add(mesh5);
+	
+	doorframer2 = new THREE.BoxGeometry(4, 216, 2);
+    material6 = new THREE.MeshPhongMaterial({map:wood4Texture,bumpMap:woodbumptex4});
+    mesh6 = new THREE.Mesh(doorframer2, material6);
+	mesh6.position.set(2, 108, -3);
+    scene.add(mesh6);
+	
+	//e
+    doorframee1 = new THREE.BoxGeometry(90, 3, 2);
+    material7 = new THREE.MeshPhongMaterial({map:woodTexture,bumpMap:woodbumptex});
+    mesh7 = new THREE.Mesh(doorframee1, material7);
+	mesh7.position.set(48, 1.5, -1);
+    scene.add(mesh7);
+	
+	doorframee2 = new THREE.BoxGeometry(88, 4, 2);
+    material8 = new THREE.MeshPhongMaterial({map:wood3Texture,bumpMap:woodbumptex3});
+    mesh8 = new THREE.Mesh(doorframee2, material8);
+	mesh8.position.set(48, 2, -3);
+    scene.add(mesh8);
+	
+	//door
+	
+	frame = new THREE.Object3D();
+    scene.add(frame);
+	
+	door = new THREE.BoxGeometry(89, 210, 2);
+    material = new THREE.MeshPhongMaterial({map:wood2Texture,bumpMap:woodbumptex2});
+    mesh = new THREE.Mesh(door, material);
+	mesh.position.set(-44.75, 108, -3);
+    frame.add(mesh);
+	
+	//DoorHandle
+	doorhand1 = new THREE.CylinderGeometry (4,2,3,32);
+	hand1 = new THREE.MeshPhongMaterial ({map:MetalTexture});
+	han1 = new THREE.Mesh (doorhand1, hand1);
+	han1.position.set(-80, 100, -0.5);
+	frame.add (han1);
+	
+	doorhand12 = new THREE.CylinderGeometry (2,2,3,32);
+	hand12 = new THREE.MeshPhongMaterial ({map:MetalTexture});
+	han12 = new THREE.Mesh (doorhand12, hand12);
+	han12.position.set(-80, 100, 2.5);
+	frame.add (han12);	
+	
+	doorhand2 = new THREE.CylinderGeometry (4,2,3,32);
+	hand2 = new THREE.MeshPhongMaterial ({map:MetalTexture});
+	han2 = new THREE.Mesh (doorhand2, hand2);
+	han2.position.set(-80, 100, -5.5);
+	frame.add (han2);
+	
+	doorhand22 = new THREE.CylinderGeometry (2,2,3,32);
+	hand22 = new THREE.MeshPhongMaterial ({map:MetalTexture});
+	han22 = new THREE.Mesh (doorhand22, hand22);
+	han22.position.set(-80, 100, -8.5);
+	frame.add (han22);
 
-    var gridXZ = new THREE.GridHelper(100, 10);
+	doorhandle1 = new THREE.SphereGeometry (5,32,32);
+	handle1 = new THREE.MeshPhongMaterial ({map:MetalTexture2});
+	handl1 = new THREE.Mesh (doorhandle1, handle1);
+	handl1.position.set(-80, 100, 7.5);
+	frame.add (handl1);
+	
+	doorhandle2 = new THREE.SphereGeometry (5,32,32);
+	handle2 = new THREE.MeshPhongMaterial ({map:MetalTexture2});
+	handl2 = new THREE.Mesh (doorhandle2, handle2);
+	handl2.position.set(-80, 100, -13.5);
+	frame.add (handl2);		
+	
+			//Doorshaft
+	//u		
+	doorshaft1 = new THREE.CylinderGeometry (1,1,15,32);
+	cyl_mat1 = new THREE.MeshPhongMaterial ({map:MetalTexture});
+	shaft1 = new THREE.Mesh (doorshaft1, cyl_mat1);
+	shaft1.position.set(92.5, 165, 2);
+	scene.add (shaft1);
+	
+	doorshaft_1 = new THREE.BoxGeometry(0.5, 15, 4);
+    mat1 = new THREE.MeshPhongMaterial({map:MetalTexture});
+    shaft_1 = new THREE.Mesh(doorshaft_1, mat1);
+	shaft_1.position.set(0, 165, -2);
+	frame.add (shaft_1);
+	
+	doorshaft_2 = new THREE.BoxGeometry(0.5, 15, 4);
+    mat2 = new THREE.MeshPhongMaterial({map:MetalTexture});
+    shaft_2 = new THREE.Mesh(doorshaft_2, mat2);
+	shaft_2.position.set(92.75, 165, 0);
+    scene.add(shaft_2);
+	
+	//d
+	
+	doorshaft2 = new THREE.CylinderGeometry (1,1,15,32);
+	cyl_mat2 = new THREE.MeshPhongMaterial ({map:MetalTexture});
+	shaft2 = new THREE.Mesh (doorshaft2, cyl_mat2);
+	shaft2.position.set(92.5, 50, 2);
+	scene.add (shaft2);
+	
+	doorshaft_3 = new THREE.BoxGeometry(0.5, 15, 4);
+    mat3 = new THREE.MeshPhongMaterial({map:MetalTexture});
+    shaft_3 = new THREE.Mesh(doorshaft_3, mat3);
+	shaft_3.position.set(0, 50, -2);
+	frame.add (shaft_3);
+	
+	doorshaft_4 = new THREE.BoxGeometry(0.5, 15, 4);
+    mat4 = new THREE.MeshPhongMaterial({map:MetalTexture});
+    shaft_4 = new THREE.Mesh(doorshaft_4, mat4);
+	shaft_4.position.set(92.75, 50, 0);
+    scene.add(shaft_4);
+	
+    light1 = new THREE.PointLight(0xffffff);
+    light1.position.set(300, 300, 300);
+    scene.add(light1);
+	
+	light2 = new THREE.PointLight(0xffffff);
+    light2.position.set(-300, -300, -300);
+    scene.add(light2);
+
+    var gridXZ = new THREE.GridHelper(200, 10);
     gridXZ.setColors(new THREE.Color(0xff0000), new THREE.Color(0xffffff));
- //   scene.add(gridXZ);
+    scene.add(gridXZ);
 
-    var light = new THREE.PointLight(0xffffff);
-    light.position.set(0, 0, 0);
-	light.castShadow = true;
-    scene.add(light);
-	
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x888888);
-	renderer.autoClear = false;
-    control2 = new THREE.OrbitControls(camera, renderer.domElement);
-    document.body.appendChild(renderer.domElement);
-    window.addEventListener('resize', onWindowResize, false);
-}
 
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    document.body.appendChild(renderer.domElement);
+
 }
 
 function animate() {
-	control2.update();
-	if(turn){
-	    
-		angle +=0.0005;
-		earth.position.set(250 * Math.cos(angle), 0, -250 * Math.sin(angle));
-		earth.rotation.y = angle*365;
-	
-		angle2 = angle * 12;
-		moon.position.set(50 * Math.cos(angle2-angle*365), 0, -50 * Math.sin(angle2-angle*365));
-		moon.rotation.y = angle2-angle*365;
+	controls.update();
+	if(angle>=2){turn=false;}
+	if(angle<=0){turn2=false;}
+    if (turn){ 	
+	angle +=0.05;
+	frame.rotation.y =angle;
+	sound.play();
 	}
-	requestAnimationFrame ( animate ); 
-	update();
-	render();  
+	else if (turn2){ 	
+	angle -=0.05;
+	frame.rotation.y =angle;
+	sound.play();
+	}
+    requestAnimationFrame(animate);
+    render();
 }
-
-function update()
-{
-	keyboard.update();  
-	//control.update();	
-	if ( keyboard.down("S"))  
-		turn ^= 1;  
-	if ( keyboard.down("M"))  
-	{
-		audio = !audio;
-		if(audio)
-		{
-			sound.play();
-		}	
-		else{
-			sound.pause();
-		}
-	}	
-}
-
 function render() {
-	renderer.clear();
-	renderer.render(sceneBack, cameraBack);
+		
+    frame.position.set (92.25, 0,2);
     renderer.render(scene, camera);
+	han1.rotation.x=-Math.PI/2;
+	han2.rotation.x=Math.PI/2;
+	han12.rotation.x=-Math.PI/2;
+	han22.rotation.x=Math.PI/2;
 }
 </script>
 
