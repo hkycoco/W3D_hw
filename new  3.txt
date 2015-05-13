@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#info {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    color: #ff0000
+}
+</style>
+</head>
+<body>
+<div id="info">Homework 4: Segway-2 </div>
+<script src="js/three.min.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script src="js/KeyboardState.js"></script>
+
+<script>
+var camera, scene, renderer, geometry, material, light, controls;
+var pa = new THREE.Vector3(0,50,-50);
+var pb = new THREE.Vector3(0, 50, 50);
+var pc = new THREE.Vector3(0,50,0);
+var sa = 0;
+var sb = 0;
+var speedInfo;
+var k = 0;
+var keyboard = new KeyboardState();
+
+init();
+animate();
+
+
+
+function init() {
+
+ //   speedInfo = window.document.getElementById('speed');
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+    camera.position.z = 500;
+    scene.add(camera);
+	//////////////////////////////////////////
+
+    THREE.ImageUtils.crossOrigin = '';
+    var colormap = THREE.ImageUtils.loadTexture('images/tire-side.jpg');
+    var colormap2 = THREE.ImageUtils.loadTexture('images/tire-wheel.jpg');
+	var colormap3 = THREE.ImageUtils.loadTexture('images/tire-wheelbump.jpg');
+	var MetalTexture = THREE.ImageUtils.loadTexture("images/Metal.jpg");
+	var MetalTexture2 = THREE.ImageUtils.loadTexture("images/Metal2.jpg");	
+
+
+	
+
+//body
+	frame = new THREE.Object3D();
+    scene.add(frame);
+	
+	pole = new THREE.CylinderGeometry (5,5,100,32);
+	polem = new THREE.MeshPhongMaterial ({map:MetalTexture});
+	polem = new THREE.Mesh (pole, polem);
+	polem.position.copy(0,50,0);
+	frame.add (polem);
+	
+	//////////////////////////////////////////
+	
+    spotLight = new THREE.SpotLight(0xffffff, 1.3);
+    spotLight.position.set(0, 500, 0);
+    spotLight.angle = Math.PI / 3;
+
+    spotLight.castShadow = true;
+
+    spotLight.shadowMapWidth = 1024;
+    spotLight.shadowMapHeight = 1024;
+
+    spotLight.shadowCameraNear = 5;
+    spotLight.shadowCameraFar = 4000;
+    spotLight.shadowCameraFov = spotLight.angle / Math.PI * 180;
+
+    spotLight.exponent = 20;
+ //   spotLight.target = mesh;
+    scene.add(spotLight);
+
+    var spotball = new THREE.Mesh(new THREE.SphereGeometry(5),
+    new THREE.MeshBasicMaterial({
+        color: 0xff0000,
+        wireframe: true
+    }));
+    spotball.position.copy(spotLight.position);
+    scene.add(spotball);
+
+    var ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(1000, 1000, 100, 100),
+    new THREE.MeshLambertMaterial());
+    ground.rotation.x = -Math.PI / 2;
+    scene.add(ground);
+
+    ground.receiveShadow = true;
+
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x888888);
+    renderer.shadowMapEnabled = true;
+    renderer.shadowMapType = THREE.PCFShadowMap;
+
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    document.body.appendChild(renderer.domElement);
+}
+function myclamp(x, lo, hi) {
+    return (x < lo) ? lo : ((x > hi) ? hi : x);
+}
+function animate() {
+	keyboard.update();
+	
+
+		
+		
+    controls.update();
+    requestAnimationFrame(animate);
+    render();
+}
+
+function render() {
+	polem.rotation.x=-Math.PI/2;
+    renderer.render(scene, camera);
+
+}
+</script>
+
+</body>
+
+</html>

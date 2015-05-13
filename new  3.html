@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#info {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    color: #ff0000
+}
+</style>
+</head>
+<body>
+<div id="info">Homework 3: Segway </div>
+<script src="js/three.min.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script src="js/KeyboardState.js"></script>
+
+<script>
+var camera, scene, renderer, geometry, material, light, controls;
+var angle = 0;
+var keyboard = new KeyboardState();
+var speed = 0;
+
+var pa = new THREE.Vector3(0,50,-50);
+var pb = new THREE.Vector3(0, 50, 50);
+var pc = new THREE.Vector3(0,50,0);
+var sa = 0;
+var sb = 0;
+var speedInfo;
+var k = 0;
+
+init();
+animate();
+function update(dt) {
+    var center = new THREE.Vector3();
+    var tmp = new THREE.Vector3();
+    var l = tmp.subVectors(pa, pb).length();
+
+    k = l * sa / (sb - sa);
+    var omega = (sb - sa) / l;
+    //if (omega === 0.0) {
+    if (Math.abs(sa-sb) < 1e-5) {    // this gives better result (no jerk)
+    tmp.subVectors(pa, pb).normalize().cross(new THREE.Vector3(0, 1, 0)).multiplyScalar(sa * dt);
+        pa.add(tmp);
+        pb.add(tmp);
+        tire.position.copy(pa);
+        tire2.position.copy(pb);
+        return; // do a pure translation then return
+    }
+
+    tmp.subVectors(pa, pb).normalize().multiplyScalar(k);
+    center.copy(tmp.add(pa));
+
+    tmp.subVectors(pa, center)
+        .applyAxisAngle(new THREE.Vector3(0, 1, 0), omega * dt)
+        .add(center);
+    pa.copy(tmp);
+
+    tmp.subVectors(pb, center)
+        .applyAxisAngle(new THREE.Vector3(0, 1, 0), omega * dt)
+        .add(center);
+    pb.copy(tmp);
+
+    // normalize ...
+    //tmp.subVectors (pb,pa).normalize().multiplyScalar(l);
+    //pb.addVectors(tmp,pa);
+    
+ //   tire.position.copy(pa);
+ //   tire2.position.copy(pb);
+    point.position.copy (center);
+	pointa.position.copy(pa);
+	pointb.posinton.copy(pb);
+}
+function init() {
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+    camera.position.z = 500;
+    scene.add(camera);
+
+    THREE.ImageUtils.crossOrigin = '';
+    var colormap = THREE.ImageUtils.loadTexture('images/tire-side.jpg');
+    var colormap2 = THREE.ImageUtils.loadTexture('images/tire-wheel.jpg');
+	var colormap3 = THREE.ImageUtils.loadTexture('images/tire-wheelbump.jpg');
+	var MetalTexture = THREE.ImageUtils.loadTexture("images/Metal.jpg");
+	var MetalTexture2 = THREE.ImageUtils.loadTexture("images/Metal2.jpg");	
+//tire1
+    tire = new THREE.Object3D();
+    geometry = new THREE.CircleGeometry(50, 20);
+    material = new THREE.MeshBasicMaterial({
+        map: colormap,
+        transparent: true,  // for cut-out texture
+        side: THREE.DoubleSide
+    });
+	
+    var mesh = new THREE.Mesh(geometry, material);
+	colormap2.wrapS = colormap2.wrapT = THREE.RepeatWrapping; 
+	colormap2.repeat.set( 4, 1 );
+    var mesh2 = new THREE.Mesh(new THREE.CylinderGeometry(50, 50, 20, 30, 1, true), // only side
+    new THREE.MeshPhongMaterial({
+        map: colormap2,
+		bumpMap:colormap3,
+        side: THREE.DoubleSide
+    }));
+    mesh2.rotation.x = Math.PI / 2;
+    mesh.position.set(0, 0, 10);
+    mesh0 = mesh.clone();
+    mesh0.position.set(0, 0, -10);
+    mesh0.rotation.y = Math.PI;
+    tire.add (mesh);
+    tire.add(mesh0);
+    tire.add(mesh2);
+ //   scene.add(tire); 
+//    tire.position.copy(pa);	
+//tire2
+    tire2 = new THREE.Object3D();
+    geometry_2 = new THREE.CircleGeometry(50, 20);
+    material_2 = new THREE.MeshBasicMaterial({
+        map: colormap,
+        transparent: true,  // for cut-out texture
+        side: THREE.DoubleSide
+    });
+	
+    var mesh_2 = new THREE.Mesh(geometry_2, material_2);
+	colormap2.wrapS = colormap2.wrapT = THREE.RepeatWrapping; 
+	colormap2.repeat.set( 4, 1 );
+    var mesh2_2 = new THREE.Mesh(new THREE.CylinderGeometry(50, 50, 20, 30, 1, true), // only side
+    new THREE.MeshPhongMaterial({
+        map: colormap2,
+		bumpMap:colormap3,
+        side: THREE.DoubleSide
+    }));
+    mesh2_2.rotation.x = Math.PI / 2;
+    mesh_2.position.set(0, 0, 10);
+    mesh0_2 = mesh_2.clone();
+    mesh0_2.position.set(0, 0, -10);
+    mesh0_2.rotation.y = Math.PI;
+    tire2.add (mesh_2);
+    tire2.add(mesh0_2);
+    tire2.add(mesh2_2);
+//    scene.add(tire2); 
+//    tire2.position.copy(pb);
+	
+///
+    point = new THREE.Mesh(new THREE.SphereGeometry(5,5,40),
+    new THREE.MeshBasicMaterial({
+         color:0x000000
+    }));
+	point.position.copy(pc);
+    scene.add(point);
+	
+/*	pointa = new THREE.Mesh(new THREE.SphereGeometry(5,5,40),
+    new THREE.MeshBasicMaterial({
+         color:0xff0000
+    }));
+	pointa.position.copy(pa);
+    scene.add(pointa);
+	
+	pointb = new THREE.Mesh(new THREE.SphereGeometry(5,5,40),
+    new THREE.MeshBasicMaterial({
+         color:0x00ff00
+    }));
+	pointb.position.copy(pb);
+    scene.add(pointb);*/
+	
+//body
+	frame = new THREE.Object3D();
+    scene.add(frame);
+	
+	foot = new THREE.CylinderGeometry (5,5,100,32);
+	foott = new THREE.MeshPhongMaterial ({map:MetalTexture});
+	foott = new THREE.Mesh (foot, foott);
+	foott.position.set(0, 50, 0);
+	frame.add (foott);	
+	
+    spotLight = new THREE.SpotLight(0xffffff, 1.3);
+    spotLight.position.set(0, 500, 0);
+    spotLight.angle = Math.PI / 3;
+
+    spotLight.castShadow = true;
+
+    spotLight.shadowMapWidth = 1024;
+    spotLight.shadowMapHeight = 1024;
+
+    spotLight.shadowCameraNear = 5;
+    spotLight.shadowCameraFar = 4000;
+    spotLight.shadowCameraFov = spotLight.angle / Math.PI * 180;
+
+    spotLight.exponent = 20;
+    spotLight.target = frame;
+    scene.add(spotLight);
+
+    var spotball = new THREE.Mesh(new THREE.SphereGeometry(5),
+    new THREE.MeshBasicMaterial({
+        color: 0xff0000,
+        wireframe: true
+    }));
+    spotball.position.copy(spotLight.position);
+    scene.add(spotball);
+
+    var ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(1000, 1000, 100, 100),
+    new THREE.MeshLambertMaterial());
+    ground.rotation.x = -Math.PI / 2;
+    scene.add(ground);
+
+    ground.receiveShadow = true;
+	//tire1.shadow
+    mesh.castShadow = true;
+	mesh0.castShadow = true;
+	mesh2.castShadow = true;
+	//tire2.shadow
+	mesh_2.castShadow = true;
+	mesh0_2.castShadow = true;
+	mesh2_2.castShadow = true;
+	//
+	frame.castShadow =true;
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x888888);
+    renderer.shadowMapEnabled = true;
+    renderer.shadowMapType = THREE.PCFShadowMap;
+
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    document.body.appendChild(renderer.domElement);
+}
+function myclamp(x, lo, hi) {
+    return (x < lo) ? lo : ((x > hi) ? hi : x);
+}
+function animate() {
+	keyboard.update();
+	/*	
+	if ( keyboard.pressed('up') ) {
+	
+	}
+	if ( keyboard.pressed('down') ) {
+		
+	}
+	if ( keyboard.pressed("left") ) {
+
+	}
+	else if ( keyboard.pressed("right") ){
+
+	}
+	sa = myclamp(sa, -100, 100);
+    sb = myclamp(sb, -100, 100);*/
+	
+	
+   if (keyboard.pressed("I")) sb += 1;
+    if (keyboard.pressed("K")) sb -= 1;
+    if (keyboard.pressed("W")) sa += 1;
+    if (keyboard.pressed("S")) sa -= 1;
+
+    sa = myclamp(sa, -30, 30);
+	sa = myclamp(sa, -30, 30);
+
+	
+
+    var text = 'sa: ' + sa.toFixed(2) + ', ' + 'sb: ' + sb.toFixed(2)
+    + '<br/>k: ' + k.toFixed(2);
+    
+ //   speedInfo.innerHTML = text;
+    // number format ?!
+
+    dt = 0.01;
+    update(0.01);
+
+    var tmp = new THREE.Vector3();
+    tmp.copy(pa);
+    tmp.add(pb).multiplyScalar(0.5); // (pa+pb)/2
+    frame.position.copy(tmp);
+    tmp.copy(pa);
+    tmp.sub(pb); // pa - pb;
+    var angle = Math.atan2(tmp.y, tmp.x) - Math.PI / 2;
+    console.log(angle);
+    frame.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), angle);	
+	
+    controls.update();
+    requestAnimationFrame(animate);
+    render();
+}
+
+function render() {
+    renderer.render(scene, camera);
+	foott.rotation.x=-Math.PI/2;
+/*	handd.rotation.x=-Math.PI/2;
+	handd2.rotation.z=-Math.PI/12;
+	handd22.rotation.z=Math.PI/3;
+	handd23.rotation.z=Math.PI/3;
+	meshb.rotation.z=-Math.PI/12;*/
+
+
+}
+</script>
+
+</body>
+
+</html>
